@@ -1,0 +1,25 @@
+---
+const { hero } = Astro.props;
+const { title, subtitle, ctaText, ctaLink } = hero;
+---
+
+<section
+  style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"
+  class="py-20 sm:py-28 lg:py-36 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-4xl mx-auto text-center">
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+      {title}
+    </h1>
+    <p class="text-lg sm:text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto">
+      {subtitle}
+    </p>
+    <a
+      href={ctaLink}
+      style="color: var(--color-primary);"
+      class="inline-block bg-white font-bold px-8 py-4 rounded-full text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+    >
+      {ctaText}
+    </a>
+  </div>
+</section>

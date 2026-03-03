@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import Footer from '../components/Footer.astro';
+import { getTenantConfig } from '../lib/api.js';
+
+function getTenantSlug(request) {
+  const url = new URL(request.url);
+
+  // Primero revisar query param (desarrollo)
+  const paramTenant = url.searchParams.get('tenant');
+  if (paramTenant) return paramTenant;
+
+  // Luego revisar subdominio (producción)
+  const host = request.headers.get('host') || '';
+  const parts = host.split('.');
+  if (parts.length > 2 && parts[0] !== 'www') {
+    return parts[0];
+  }
+
+  return 'default';
+}
+
+const tenant = getTenantSlug(Astro.request);
+const config = await getTenantConfig(tenant);
+---
+
+<Layout config={config}>
+  <Header config={config} />
+  <main>
+    <Hero hero={config.hero} />
+    <Features features={config.features} />
+  </main>
+  <Footer footer={config.footer} />
+</Layout>

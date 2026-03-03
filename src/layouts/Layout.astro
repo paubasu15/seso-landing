@@ -1,0 +1,32 @@
+---
+const { config } = Astro.props;
+const { name, primaryColor, secondaryColor, backgroundColor, textColor } = config;
+
+const cssVars = `
+  :root {
+    --color-primary: ${primaryColor};
+    --color-secondary: ${secondaryColor};
+    --color-bg: ${backgroundColor};
+    --color-text: ${textColor};
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+`;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={`${name} - Landing Page`} />
+    <title>{name} - Landing Page</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Fragment set:html={`<style>${cssVars}</style>`} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

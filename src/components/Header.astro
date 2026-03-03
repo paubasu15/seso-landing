@@ -1,0 +1,26 @@
+---
+const { config } = Astro.props;
+const { slug, name, logo } = config;
+
+const env = import.meta.env.PUBLIC_ENV || 'development';
+const dashboardLink = env === 'production' ? '/app' : `/app?tenant=${slug}`;
+---
+
+<header style="background-color: var(--color-primary);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      {logo ? (
+        <img src={logo} alt={`${name} logo`} class="h-10 w-auto object-contain" />
+      ) : (
+        <img src="/images/placeholder-logo.svg" alt={`${name} logo`} class="h-10 w-auto" />
+      )}
+      <span class="text-white text-xl font-bold">{name}</span>
+    </div>
+    <a
+      href={dashboardLink}
+      class="text-white text-sm font-medium hover:opacity-80 transition-opacity"
+    >
+      Dashboard →
+    </a>
+  </div>
+</header>

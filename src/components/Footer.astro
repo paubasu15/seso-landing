@@ -1,0 +1,23 @@
+---
+const { footer } = Astro.props;
+const { text, links } = footer;
+---
+
+<footer class="bg-gray-900 py-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto text-center">
+    {links && links.length > 0 && (
+      <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6">
+        {links.map((link) => (
+          <a
+            href={link.url}
+            style="color: var(--color-primary);"
+            class="text-sm font-medium hover:opacity-80 transition-opacity"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    )}
+    <p class="text-gray-400 text-sm">{text}</p>
+  </div>
+</footer>
