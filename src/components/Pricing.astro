@@ -1,0 +1,62 @@
+---
+const { data } = Astro.props;
+const items = data?.items || [];
+const sectionTitle = data?.title || 'Planes';
+---
+
+{items && items.length > 0 && (
+  <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      <h2
+        style="color: var(--color-primary);"
+        class="text-3xl sm:text-4xl font-bold text-center mb-12"
+        data-field="title"
+      >
+        {sectionTitle}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8" data-field="items">
+        {items.map((plan) => (
+          <div
+            class={`bg-white rounded-2xl p-8 border shadow-sm flex flex-col transition-transform duration-200 ${plan.highlighted ? 'border-2 scale-105 shadow-lg' : 'border-gray-100 hover:shadow-md'}`}
+            style={plan.highlighted ? 'border-color: var(--color-primary);' : ''}
+          >
+            {plan.highlighted && (
+              <div
+                class="text-white text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full self-start mb-4"
+                style="background-color: var(--color-primary);"
+              >
+                Recomendado
+              </div>
+            )}
+            <h3 class="text-xl font-bold mb-2" style="color: var(--color-text);">{plan.name}</h3>
+            <div class="flex items-baseline gap-1 mb-6">
+              <span class="text-4xl font-extrabold" style="color: var(--color-primary);">{plan.price}</span>
+              {plan.period && (
+                <span class="text-gray-500 text-sm">/{plan.period}</span>
+              )}
+            </div>
+            {plan.features && plan.features.length > 0 && (
+              <ul class="space-y-3 mb-8 flex-1">
+                {plan.features.map((feature) => (
+                  <li class="flex items-center gap-2 text-sm text-gray-600">
+                    <span style="color: var(--color-primary);">✓</span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <a
+              href={plan.ctaLink || '/app'}
+              class={`block text-center font-bold px-6 py-3 rounded-full transition-all duration-200 ${plan.highlighted ? 'text-white hover:opacity-90' : 'hover:opacity-80 border-2'}`}
+              style={plan.highlighted
+                ? 'background-color: var(--color-primary);'
+                : 'color: var(--color-primary); border-color: var(--color-primary);'}
+            >
+              {plan.ctaText || 'Comenzar'}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

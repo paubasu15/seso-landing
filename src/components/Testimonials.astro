@@ -1,0 +1,43 @@
+---
+const { data } = Astro.props;
+const items = data?.items || [];
+const sectionTitle = data?.title || 'Lo que dicen nuestros clientes';
+---
+
+{items && items.length > 0 && (
+  <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <h2
+        style="color: var(--color-primary);"
+        class="text-3xl sm:text-4xl font-bold text-center mb-12"
+        data-field="title"
+      >
+        {sectionTitle}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8" data-field="items">
+        {items.map((testimonial) => (
+          <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm relative">
+            <div class="text-5xl leading-none text-gray-200 font-serif absolute top-4 left-6 select-none">"</div>
+            <p class="text-gray-700 text-base leading-relaxed mb-6 pt-4 relative z-10">
+              {testimonial.quote}
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                style="background-color: var(--color-primary);"
+              >
+                {testimonial.author ? testimonial.author.charAt(0).toUpperCase() : '?'}
+              </div>
+              <div>
+                <p class="font-semibold text-sm" style="color: var(--color-text);">{testimonial.author}</p>
+                {testimonial.role && (
+                  <p class="text-gray-500 text-xs">{testimonial.role}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

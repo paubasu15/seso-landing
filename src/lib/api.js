@@ -15,17 +15,16 @@ function getDefaultConfig(tenant) {
   return {
     slug: tenant,
     name: tenant.charAt(0).toUpperCase() + tenant.slice(1),
+    template: 'starter',
     primaryColor: '#EF4444',
     secondaryColor: '#DC2626',
     backgroundColor: '#FFFFFF',
     textColor: '#1E293B',
-    hero: {
-      title: 'Bienvenido',
-      subtitle: 'Cargando información...',
-      ctaText: 'Comenzar',
-      ctaLink: '/app',
-    },
-    features: [],
-    footer: { text: '© 2026', links: [] },
+    components: [
+      { type: 'header', order: 1, visible: true, data: { showLogo: true } },
+      { type: 'hero', order: 2, visible: true, data: { title: 'Bienvenido', subtitle: 'Cargando...', ctaText: 'Comenzar', ctaLink: '/app' } },
+      { type: 'features', order: 3, visible: true, data: { title: 'Servicios', items: [] } },
+      { type: 'footer', order: 4, visible: true, data: { text: '© 2026', links: [] } },
+    ],
   };
 }

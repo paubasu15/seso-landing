@@ -28,6 +28,7 @@ La landing estará disponible en `http://localhost:4321`.
 - `http://localhost:4321?tenant=acme` — landing del tenant "acme"
 - `http://localhost:4321?tenant=globex` — landing del tenant "globex"
 - `http://localhost:4321` — landing con config por defecto (sin tenant)
+- `http://localhost:4321/preview?tenant=acme` — preview para el editor (con postMessage)
 
 ## Build de producción
 
@@ -43,10 +44,47 @@ npm run start
 - **Desarrollo:** se lee el query param `?tenant=acme`
 - **Producción:** se lee el subdominio del header `Host` (p.ej. `acme.sesomxcohtrc.lat`)
 - Si no se detecta ningún tenant, se usa `default`
+- La lógica de detección está en `src/lib/tenant.js` (función `getTenantSlug`)
+
+### Arquitectura de componentes
+
+La API devuelve un array `components` en la configuración del tenant. Cada componente tiene:
+- `type`: tipo del componente (`header`, `hero`, `features`, `testimonials`, `pricing`, `footer`)
+- `order`: orden de renderizado
+- `visible`: si debe mostrarse
+- `data`: datos específicos del componente
+
+Los componentes se renderizan dinámicamente en orden, mostrando sólo los visibles.
+
+### Componentes disponibles
+
+| Tipo | Descripción |
+|---|---|
+| `header` | Cabecera con logo, nombre y navegación |
+| `hero` | Sección principal con título, subtítulo y CTA |
+| `features` | Grid de características/servicios |
+| `testimonials` | Grid de testimonios de clientes |
+| `pricing` | Planes de precios con tarjetas |
+| `footer` | Pie de página con texto y enlaces |
+
+### Página /preview (editor)
+
+La ruta `/preview` es idéntica a la landing pública, pero:
+
+1. Cada componente está envuelto en `<div data-component-type="...">` para identificación
+2. Cada elemento editable tiene el atributo `data-field` 
+3. Envía `PREVIEW_READY` al padre cuando carga
+4. Escucha mensajes `postMessage` del editor React
+
+#### Mensajes soportados
+
+- **`UPDATE_COLORS`** — actualiza las CSS custom properties de colores en `:root`
+- **`UPDATE_COMPONENT`** — actualiza el contenido de un componente (texto o items)
+- **`TOGGLE_COMPONENT`** — muestra u oculta un componente
 
 ### SSR y colores dinámicos
 
-Cada vez que un usuario visita la landing, Astro hace una solicitud a la API .NET para obtener la configuración del tenant (colores, textos, hero, features, footer). Los colores se inyectan como CSS custom properties (`--color-primary`, `--color-secondary`, etc.) directamente en el HTML renderizado en el servidor, de modo que la página ya llega con los estilos correctos al navegador sin parpadeos.
+Cada vez que un usuario visita la landing, Astro hace una solicitud a la API para obtener la configuración del tenant. Los colores se inyectan como CSS custom properties (`--color-primary`, `--color-secondary`, `--color-bg`, `--color-text`) directamente en el HTML del servidor, sin parpadeos.
 
 ### Fallback graceful
 
@@ -56,10 +94,11 @@ Si la API no responde, la landing se muestra con datos por defecto (colores rojo
 
 | Variable | Descripción |
 |---|---|
-| `PUBLIC_API_URL` | URL base de la API .NET |
+| `PUBLIC_API_URL` | URL base de la API |
 | `PUBLIC_LANDING_URL` | URL pública de esta landing |
 | `PUBLIC_PANEL_URL` | URL del panel/dashboard |
 | `PUBLIC_DOMAIN` | Dominio base para detección de subdominio |
 | `PUBLIC_ENV` | `development` o `production` |
 
 Los archivos `.env.development` y `.env.production` ya están incluidos con valores por defecto.
+

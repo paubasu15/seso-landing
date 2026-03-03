@@ -1,0 +1,206 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Pricing from '../components/Pricing.astro';
+import Footer from '../components/Footer.astro';
+import { getTenantConfig } from '../lib/api.js';
+import { getTenantSlug } from '../lib/tenant.js';
+
+const tenant = getTenantSlug(Astro.request);
+const config = await getTenantConfig(tenant);
+
+const componentMap = {
+  header: Header,
+  hero: Hero,
+  features: Features,
+  testimonials: Testimonials,
+  pricing: Pricing,
+  footer: Footer,
+};
+
+const visibleComponents = config.components
+  .filter(c => c.visible)
+  .sort((a, b) => a.order - b.order);
+---
+
+<Layout config={config}>
+  {visibleComponents.map(comp => {
+    const Component = componentMap[comp.type];
+    return Component ? (
+      <div data-component-type={comp.type}>
+        <Component data={comp.data} config={config} />
+      </div>
+    ) : null;
+  })}
+</Layout>
+
+<script>
+  window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+
+  const ALLOWED_ORIGIN = import.meta.env.PUBLIC_PANEL_URL
+    ? new URL(import.meta.env.PUBLIC_PANEL_URL).origin
+    : null;
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  const iconMap = {
+    rocket: '🚀',
+    shield: '🛡️',
+    chart: '📊',
+    star: '⭐',
+    zap: '⚡',
+    heart: '❤️',
+    users: '👥',
+    mail: '📧',
+    edit: '✏️',
+    globe: '🌐',
+  };
+
+  function getIcon(icon) {
+    return iconMap[icon] || '✨';
+  }
+
+  function rebuildFeatures(container, items) {
+    const grid = container.querySelector('[data-field="items"]');
+    if (!grid) return;
+    grid.innerHTML = items.map(feature => `
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="text-4xl mb-4">${getIcon(feature.icon)}</div>
+        <h3 class="text-lg font-bold mb-2" style="color: var(--color-text);">${escapeHtml(feature.title)}</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">${escapeHtml(feature.description)}</p>
+      </div>
+    `).join('');
+  }
+
+  function rebuildTestimonials(container, items) {
+    const grid = container.querySelector('[data-field="items"]');
+    if (!grid) return;
+    grid.innerHTML = items.map(t => `
+      <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm relative">
+        <div class="text-5xl leading-none text-gray-200 font-serif absolute top-4 left-6 select-none">"</div>
+        <p class="text-gray-700 text-base leading-relaxed mb-6 pt-4 relative z-10">${escapeHtml(t.quote)}</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background-color: var(--color-primary);">
+            ${t.author ? escapeHtml(t.author.charAt(0).toUpperCase()) : '?'}
+          </div>
+          <div>
+            <p class="font-semibold text-sm" style="color: var(--color-text);">${escapeHtml(t.author)}</p>
+            ${t.role ? `<p class="text-gray-500 text-xs">${escapeHtml(t.role)}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function rebuildPricing(container, items) {
+    const grid = container.querySelector('[data-field="items"]');
+    if (!grid) return;
+    grid.innerHTML = items.map(plan => `
+      <div class="bg-white rounded-2xl p-8 border shadow-sm flex flex-col transition-transform duration-200 ${plan.highlighted ? 'border-2 scale-105 shadow-lg' : 'border-gray-100 hover:shadow-md'}" style="${plan.highlighted ? 'border-color: var(--color-primary);' : ''}">
+        ${plan.highlighted ? `<div class="text-white text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full self-start mb-4" style="background-color: var(--color-primary);">Recomendado</div>` : ''}
+        <h3 class="text-xl font-bold mb-2" style="color: var(--color-text);">${escapeHtml(plan.name)}</h3>
+        <div class="flex items-baseline gap-1 mb-6">
+          <span class="text-4xl font-extrabold" style="color: var(--color-primary);">${escapeHtml(plan.price)}</span>
+          ${plan.period ? `<span class="text-gray-500 text-sm">/${escapeHtml(plan.period)}</span>` : ''}
+        </div>
+        ${plan.features && plan.features.length > 0 ? `
+          <ul class="space-y-3 mb-8 flex-1">
+            ${plan.features.map(f => `<li class="flex items-center gap-2 text-sm text-gray-600"><span style="color: var(--color-primary);">✓</span>${escapeHtml(f)}</li>`).join('')}
+          </ul>
+        ` : ''}
+        <a href="${escapeHtml(plan.ctaLink || '/app')}" class="block text-center font-bold px-6 py-3 rounded-full transition-all duration-200 ${plan.highlighted ? 'text-white hover:opacity-90' : 'hover:opacity-80 border-2'}" style="${plan.highlighted ? 'background-color: var(--color-primary);' : 'color: var(--color-primary); border-color: var(--color-primary);'}">
+          ${escapeHtml(plan.ctaText || 'Comenzar')}
+        </a>
+      </div>
+    `).join('');
+  }
+
+  window.addEventListener('message', (event) => {
+    if (ALLOWED_ORIGIN && event.origin !== ALLOWED_ORIGIN) return;
+    const { type, payload } = event.data || {};
+    if (!type) return;
+
+    if (type === 'UPDATE_COLORS') {
+      document.documentElement.style.setProperty('--color-primary', payload.primaryColor);
+      document.documentElement.style.setProperty('--color-secondary', payload.secondaryColor);
+      document.documentElement.style.setProperty('--color-bg', payload.backgroundColor);
+      document.documentElement.style.setProperty('--color-text', payload.textColor);
+      return;
+    }
+
+    if (type === 'UPDATE_COMPONENT') {
+      const { componentType, data } = payload;
+      const container = document.querySelector(`[data-component-type="${componentType}"]`);
+      if (!container) return;
+
+      if (componentType === 'hero') {
+        if (data.title !== undefined) {
+          const el = container.querySelector('[data-field="title"]');
+          if (el) el.textContent = data.title;
+        }
+        if (data.subtitle !== undefined) {
+          const el = container.querySelector('[data-field="subtitle"]');
+          if (el) el.textContent = data.subtitle;
+        }
+        if (data.ctaText !== undefined) {
+          const el = container.querySelector('[data-field="ctaText"]');
+          if (el) el.textContent = data.ctaText;
+        }
+      } else if (componentType === 'header') {
+        if (data.name !== undefined) {
+          const el = container.querySelector('[data-field="name"]');
+          if (el) el.textContent = data.name;
+        }
+      } else if (componentType === 'footer') {
+        if (data.text !== undefined) {
+          const el = container.querySelector('[data-field="text"]');
+          if (el) el.textContent = data.text;
+        }
+      } else if (componentType === 'features') {
+        if (data.title !== undefined) {
+          const el = container.querySelector('[data-field="title"]');
+          if (el) el.textContent = data.title;
+        }
+        if (data.items !== undefined) {
+          rebuildFeatures(container, data.items);
+        }
+      } else if (componentType === 'testimonials') {
+        if (data.title !== undefined) {
+          const el = container.querySelector('[data-field="title"]');
+          if (el) el.textContent = data.title;
+        }
+        if (data.items !== undefined) {
+          rebuildTestimonials(container, data.items);
+        }
+      } else if (componentType === 'pricing') {
+        if (data.title !== undefined) {
+          const el = container.querySelector('[data-field="title"]');
+          if (el) el.textContent = data.title;
+        }
+        if (data.items !== undefined) {
+          rebuildPricing(container, data.items);
+        }
+      }
+      return;
+    }
+
+    if (type === 'TOGGLE_COMPONENT') {
+      const { componentType, visible } = payload;
+      const container = document.querySelector(`[data-component-type="${componentType}"]`);
+      if (container) {
+        container.style.display = visible ? '' : 'none';
+      }
+      return;
+    }
+  });
+</script>
