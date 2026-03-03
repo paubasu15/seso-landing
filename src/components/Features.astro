@@ -1,0 +1,40 @@
+---
+const { features } = Astro.props;
+
+const iconMap = {
+  rocket: '🚀',
+  shield: '🛡️',
+  chart: '📊',
+  star: '⭐',
+  zap: '⚡',
+  heart: '❤️',
+};
+
+function getIcon(icon) {
+  return iconMap[icon] || '✨';
+}
+---
+
+{features && features.length > 0 && (
+  <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      <h2
+        style="color: var(--color-primary);"
+        class="text-3xl sm:text-4xl font-bold text-center mb-12"
+      >
+        Características
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {features.map((feature) => (
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div class="text-4xl mb-4">{getIcon(feature.icon)}</div>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--color-text);">
+              {feature.title}
+            </h3>
+            <p class="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
