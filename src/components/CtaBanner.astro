@@ -1,0 +1,29 @@
+---
+const { data } = Astro.props;
+const { title, subtitle, buttonText, buttonLink } = data || {};
+---
+
+<section
+  style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"
+  class="py-20 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+      {title}
+    </h2>
+    {subtitle && (
+      <p class="text-lg sm:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+        {subtitle}
+      </p>
+    )}
+    {buttonText && (
+      <a
+        href={buttonLink || '#'}
+        style="color: var(--color-primary);"
+        class="inline-block bg-white font-bold px-10 py-4 rounded-full text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+      >
+        {buttonText}
+      </a>
+    )}
+  </div>
+</section>

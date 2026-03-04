@@ -1,0 +1,58 @@
+---
+const { data } = Astro.props;
+const { title, columns, images } = data || {};
+const gridCols = columns || 3;
+---
+
+{images && images.length > 0 && (
+  <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <div class="max-w-7xl mx-auto">
+      {title && (
+        <h2
+          style="color: var(--color-primary);"
+          class="text-3xl sm:text-4xl font-bold text-center mb-12"
+        >
+          {title}
+        </h2>
+      )}
+      <div class="gallery-grid">
+        {images.map((image) => (
+          <div class="group overflow-hidden rounded-2xl">
+            {image.url ? (
+              <img
+                src={image.url}
+                alt={image.caption || ''}
+                class="w-full aspect-square object-cover rounded-2xl hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div class="w-full aspect-square bg-gray-200 rounded-2xl flex items-center justify-center hover:scale-105 transition-transform duration-300">
+                <span class="text-5xl">🖼️</span>
+              </div>
+            )}
+            {image.caption && (
+              <p class="mt-2 text-sm text-gray-500 text-center">{image.caption}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style define:vars={{ gridCols }}>
+  .gallery-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .gallery-grid {
+      grid-template-columns: repeat(var(--gridCols), minmax(0, 1fr));
+    }
+  }
+</style>

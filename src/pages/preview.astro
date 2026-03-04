@@ -6,6 +6,13 @@ import Features from '../components/Features.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Pricing from '../components/Pricing.astro';
 import Footer from '../components/Footer.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import Gallery from '../components/Gallery.astro';
+import Skills from '../components/Skills.astro';
+import ContactForm from '../components/ContactForm.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import TrustBadges from '../components/TrustBadges.astro';
 import { getTenantConfig } from '../lib/api.js';
 import { getTenantSlug } from '../lib/tenant.js';
 
@@ -22,6 +29,13 @@ const componentMap = {
   testimonials: Testimonials,
   pricing: Pricing,
   footer: Footer,
+  'cta-banner': CtaBanner,
+  gallery: Gallery,
+  skills: Skills,
+  'contact-form': ContactForm,
+  'hero-slider': HeroSlider,
+  'product-grid': ProductGrid,
+  'trust-badges': TrustBadges,
 };
 
 const visibleComponents = (config.components || [])

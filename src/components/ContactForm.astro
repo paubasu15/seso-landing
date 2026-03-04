@@ -1,0 +1,60 @@
+---
+const { data } = Astro.props;
+const { title, subtitle, email, buttonText } = data || {};
+const formAction = email ? `mailto:${email}` : '#';
+---
+
+<section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+  <div class="max-w-7xl mx-auto">
+    {title && (
+      <h2
+        style="color: var(--color-primary);"
+        class="text-3xl sm:text-4xl font-bold text-center mb-4"
+      >
+        {title}
+      </h2>
+    )}
+    {subtitle && (
+      <p class="text-center text-gray-500 mb-12 max-w-xl mx-auto">{subtitle}</p>
+    )}
+    <form action={formAction} method="post" class="max-w-2xl mx-auto flex flex-col gap-6">
+      <div>
+        <label class="block text-sm font-medium mb-1" style="color: var(--color-text);">Nombre</label>
+        <input
+          type="text"
+          name="nombre"
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 transition"
+          style="--tw-ring-color: var(--color-primary);"
+          placeholder="Tu nombre"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" style="color: var(--color-text);">Email</label>
+        <input
+          type="email"
+          name="email"
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 transition"
+          style="--tw-ring-color: var(--color-primary);"
+          placeholder="tu@email.com"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" style="color: var(--color-text);">Mensaje</label>
+        <textarea
+          name="mensaje"
+          rows="5"
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 transition resize-none"
+          style="--tw-ring-color: var(--color-primary);"
+          placeholder="Escribe tu mensaje..."
+        ></textarea>
+      </div>
+      <button
+        type="submit"
+        class="w-full text-white font-bold py-4 rounded-xl shadow hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+        style="background-color: var(--color-primary);"
+      >
+        {buttonText || 'Enviar mensaje'}
+      </button>
+    </form>
+  </div>
+</section>

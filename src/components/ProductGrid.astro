@@ -1,0 +1,58 @@
+---
+const { data } = Astro.props;
+const { title, columns, items } = data || {};
+const gridCols = columns || 4;
+---
+
+{items && items.length > 0 && (
+  <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      {title && (
+        <h2
+          style="color: var(--color-primary);"
+          class="text-3xl sm:text-4xl font-bold text-center mb-12"
+        >
+          {title}
+        </h2>
+      )}
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8"
+        style={gridCols >= 4 ? 'grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));' : ''}
+      >
+        {items.map((product) => (
+          <div class="bg-white rounded-2xl shadow overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200">
+            {product.imageUrl ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name || ''}
+                class="w-full object-cover"
+                style="aspect-ratio: 4/3;"
+              />
+            ) : (
+              <div class="w-full bg-gray-100 flex items-center justify-center" style="aspect-ratio: 4/3;">
+                <span class="text-5xl">📦</span>
+              </div>
+            )}
+            <div class="p-5 flex flex-col flex-1">
+              {product.name && (
+                <h3 class="font-bold text-base mb-1" style="color: var(--color-text);">{product.name}</h3>
+              )}
+              {product.price && (
+                <p class="text-lg font-extrabold mb-3" style="color: var(--color-primary);">{product.price}</p>
+              )}
+              {product.ctaText && product.ctaLink && (
+                <a
+                  href={product.ctaLink}
+                  class="mt-auto inline-block text-center text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity duration-200"
+                  style="background-color: var(--color-primary);"
+                >
+                  {product.ctaText}
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
