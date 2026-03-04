@@ -17,7 +17,7 @@ const dashboardLink = env === 'production' ? '/app' : `/app?tenant=${slug}`;
       ) : showLogo ? (
         <img src="/images/placeholder-logo.svg" alt={`${name} logo`} class="h-10 w-auto" />
       ) : null}
-      <span class="text-white text-xl font-bold" data-field="name">{name}</span>
+      <span class="text-white text-xl font-bold">{name}</span>
     </div>
     <nav class="hidden md:flex items-center gap-6">
       {showNav && navLinks.map((link) => (

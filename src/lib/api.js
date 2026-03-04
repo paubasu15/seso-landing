@@ -1,8 +1,12 @@
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000';
 
-export async function getTenantConfig(tenant) {
+export async function getTenantConfig(tenant, options = {}) {
   try {
-    const res = await fetch(`${API_URL}/api/tenant/config?tenant=${tenant}`);
+    const params = new URLSearchParams({ tenant });
+    if (options.draft) {
+      params.set('draft', 'true');
+    }
+    const res = await fetch(`${API_URL}/api/tenant/config?${params}`);
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return await res.json();
   } catch (error) {
