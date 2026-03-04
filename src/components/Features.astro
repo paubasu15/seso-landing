@@ -27,11 +27,10 @@ function getIcon(icon) {
       <h2
         style="color: var(--color-primary);"
         class="text-3xl sm:text-4xl font-bold text-center mb-12"
-        data-field="title"
       >
         {sectionTitle}
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" data-field="items">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {items.map((feature) => (
           <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200">
             <div class="text-4xl mb-4">{getIcon(feature.icon)}</div>

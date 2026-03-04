@@ -28,7 +28,7 @@ La landing estará disponible en `http://localhost:4321`.
 - `http://localhost:4321?tenant=acme` — landing del tenant "acme"
 - `http://localhost:4321?tenant=globex` — landing del tenant "globex"
 - `http://localhost:4321` — landing con config por defecto (sin tenant)
-- `http://localhost:4321/preview?tenant=acme` — preview para el editor (con postMessage)
+- `http://localhost:4321/preview?tenant=acme` — preview SSR puro (sin JavaScript de cliente)
 
 ## Build de producción
 
@@ -67,20 +67,20 @@ Los componentes se renderizan dinámicamente en orden, mostrando sólo los visib
 | `pricing` | Planes de precios con tarjetas |
 | `footer` | Pie de página con texto y enlaces |
 
-### Página /preview (editor)
+### Página /preview (SSR puro, zero JS)
 
-La ruta `/preview` es idéntica a la landing pública, pero:
+La ruta `/preview` es idéntica a la landing pública, pero hace GET a la API con `?draft=true` para obtener el borrador en lugar de la configuración publicada.
 
-1. Cada componente está envuelto en `<div data-component-type="...">` para identificación
-2. Cada elemento editable tiene el atributo `data-field` 
-3. Envía `PREVIEW_READY` al padre cuando carga
-4. Escucha mensajes `postMessage` del editor React
+**No hay JavaScript de cliente**: no hay `postMessage`, no hay manipulación de DOM, no hay `data-field` ni `data-component-type`.
 
-#### Mensajes soportados
+#### Flujo con el dashboard
 
-- **`UPDATE_COLORS`** — actualiza las CSS custom properties de colores en `:root`
-- **`UPDATE_COMPONENT`** — actualiza el contenido de un componente (texto o items)
-- **`TOGGLE_COMPONENT`** — muestra u oculta un componente
+1. El usuario edita en el dashboard React
+2. React guarda el borrador en la API
+3. React recarga el iframe de preview (`src="/preview?tenant=..."`)
+4. Astro hace SSR leyendo el borrador desde la API y renderiza la página completa
+
+La página de preview tiene cabeceras `Cache-Control: no-store` para garantizar que cada recarga del iframe obtiene datos frescos de la API.
 
 ### SSR y colores dinámicos
 
